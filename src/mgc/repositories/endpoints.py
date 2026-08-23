@@ -16,12 +16,8 @@ class EndpointRepository:
     def create(
         self, tenant_id: str, url: str, method: str = "POST", enabled: bool = True
     ) -> Endpoint:
-        endpoint = Endpoint(
-            id=str(uuid.uuid4()), tenant_id=tenant_id, url=url, method=method, enabled=enabled
-        )
         with self._conn:
-            self._insert(endpoint)
-        return endpoint
+            return self.create_uncommitted(tenant_id, url, method, enabled)
 
     def create_uncommitted(
         self, tenant_id: str, url: str, method: str = "POST", enabled: bool = True

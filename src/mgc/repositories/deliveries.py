@@ -28,47 +28,10 @@ class DeliveryRepository:
         tenant_id: str,
         next_attempt_at: Optional[str] = None,
     ) -> Delivery:
-        now = utcnow_iso()
-        delivery = Delivery(
-            id=str(uuid.uuid4()),
-            event_id=event_id,
-            endpoint_id=endpoint_id,
-            tenant_id=tenant_id,
-            status="pending",
-            attempt_count=0,
-            next_attempt_at=next_attempt_at or now,
-            claimed_by=None,
-            claim_token=None,
-            claim_expires_at=None,
-            created_at=now,
-            updated_at=now,
-        )
         with self._conn:
-            self._conn.execute(
-                """
-                INSERT INTO deliveries (
-                    id, event_id, endpoint_id, tenant_id, status, attempt_count,
-                    next_attempt_at, claimed_by, claim_token, claim_expires_at,
-                    created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    delivery.id,
-                    delivery.event_id,
-                    delivery.endpoint_id,
-                    delivery.tenant_id,
-                    delivery.status,
-                    delivery.attempt_count,
-                    delivery.next_attempt_at,
-                    delivery.claimed_by,
-                    delivery.claim_token,
-                    delivery.claim_expires_at,
-                    delivery.created_at,
-                    delivery.updated_at,
-                ),
+            return self.create_uncommitted(
+                event_id, endpoint_id, tenant_id, next_attempt_at
             )
-            DeliveryOutboxRepository(self._conn).create_uncommitted(delivery.id)
-        return delivery
 
     def create_uncommitted(
         self,

@@ -369,3 +369,20 @@ Success
 ## System design
 
 ![System design](docs/system_design.png)
+
+# AI usage and approach
+
+Throughout, the pattern was the same: I decided what the system should do and how it should be structured, then used AI to produce the mechanical parts faster than I could type them. The repository classes, the migration files, the FastAPI request/response models  all of that is boilerplate where the shape is obvious once you've decided on the schema, and where writing it by hand is tedious.
+
+Where it needed supervision was anything involving judgement about correctness. I elected technology choices, i knew ahead of time i wanted 
+fast API with pydantic models, an asyncio queue to account for the IO bound nature of the work, 
+The first pass at the API had no authentication at all, so tenant API keys were something I had to identify and ask for. 
+Similarly, the transactional behaviour needed my direction: the outbox pattern, and the split between committing and non-committing repository methods so that an event, its delivery, and its outbox row land atomically, came from me understanding the failure modesn not from the model volunteering them. Left alone it produced code that worked on the happy path but quiely lost data on the unhappy one.
+
+Delivery durability (0009). This was the biggest correction. The original code committed the event, then dispatched the webhook — so a crash between the two lost the delivery entirely, and a failure after dispatch could double-send. I introduced the outbox pattern: 0009_create_delivery_outbox.sql, with the outbox row written in the same transaction as the delivery. That's what forced the create / create_uncommitted split across the repositories. 
+
+I also had to add in the checks and measures re url visitation, backoffs, timeouts, and i also gave it the notion of transient errors,
+ie. errors taht could be try vs insta dead ones.
+
+I also used it for docs, once I had the project finished I asked to scan it and write docs detailing all of teh error handling I'd thought of.  I then edited the doc it created.
+
