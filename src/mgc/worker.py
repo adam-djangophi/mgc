@@ -132,6 +132,7 @@ class DeliveryWorker:
     async def run_queue(self, queue, stop_event: Optional[asyncio.Event] = None) -> None:
         """Consume delivery IDs from an async queue with 20 workers."""
         stop_event = stop_event or asyncio.Event()
+        logger.info("delivery worker started with %s queue consumers", CONCURRENCY)
         async def consume() -> None:
             while not stop_event.is_set():
                 try:
@@ -144,4 +145,5 @@ class DeliveryWorker:
                     queue.task_done()
 
         await asyncio.gather(*(consume() for _ in range(CONCURRENCY)))
+        logger.info("delivery worker stopped")
 

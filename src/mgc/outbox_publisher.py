@@ -42,9 +42,11 @@ class OutboxPublisher:
         self, poll_interval: float = 1.0, stop_event: Optional[asyncio.Event] = None
     ) -> None:
         stop_event = stop_event or asyncio.Event()
+        logger.info("outbox publisher started with poll interval %.2fs", poll_interval)
         while not stop_event.is_set():
             if await self.publish_once() == 0:
                 try:
                     await asyncio.wait_for(stop_event.wait(), timeout=poll_interval)
                 except asyncio.TimeoutError:
                     pass
+        logger.info("outbox publisher stopped")

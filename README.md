@@ -107,11 +107,13 @@ curl -X POST http://127.0.0.1:8000/events \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "event_type":"test.event",
-    "payload":{"message":"hello"},
-    "endpoint":{
-      "url":"https://postman-echo.com/post",
-      "method":"POST"
+    "event_type": "test.event",
+    "payload": {
+      "message": "hello"
+    },
+    "endpoint": {
+      "url": "https://postman-echo.com/post",
+      "method": "POST"
     }
   }'
 ```

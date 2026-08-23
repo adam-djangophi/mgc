@@ -13,6 +13,8 @@ from mgc.outbox_publisher import OutboxPublisher
 from mgc.repositories import DeliveryOutboxRepository
 from mgc.worker import DeliveryWorker
 
+logger = logging.getLogger(__name__)
+
 
 async def run_worker(poll_interval: float) -> None:
     stop_event = asyncio.Event()
@@ -23,12 +25,15 @@ async def run_worker(poll_interval: float) -> None:
     conn = require_db(DEFAULT_DB_PATH)
     queue = asyncio.Queue()
     try:
+        logger.info("worker process starting with database %s", DEFAULT_DB_PATH)
         DeliveryOutboxRepository(conn).reset_unfinished()
+        logger.info("reset unfinished outbox messages for restart recovery")
         await asyncio.gather(
             OutboxPublisher(conn, queue).run(poll_interval, stop_event),
             DeliveryWorker(conn).run_queue(queue, stop_event),
         )
     finally:
+        logger.info("worker process stopping")
         conn.close()
 
 
@@ -38,6 +43,7 @@ def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format=log_format,
+        force=True,
         handlers=[
             logging.FileHandler(log_path),
             logging.StreamHandler(),

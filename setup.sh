@@ -2,9 +2,10 @@
 set -euo pipefail
 
 python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-python scripts/init_db.py
+.venv/bin/python -m pip install --upgrade pip setuptools wheel
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/python scripts/init_db.py
 
-printf '\nSetup complete. Activate the environment with:\n'
-printf 'source .venv/bin/activate\n'
+printf '\nSetup complete.\n'
+printf 'Run the API with: ./run_api.sh\n'
+printf 'Run the worker with: .venv/bin/python -m mgc.main\n'
