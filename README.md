@@ -372,7 +372,7 @@ Success
 
 # AI usage and approach
 
-Throughout, the pattern was the same: I decided what the system should do and how it should be structured, then used AI to produce the mechanical parts faster than I could type them. The repository classes, the migration files, the FastAPI request/response models  all of that is boilerplate where the shape is obvious once you've decided on the schema, and where writing it by hand is tedious.
+Throughout, the pattern was the same: I decided what the system should do and how it should be structured, then used AI to produce the mechanical parts faster than I could type them. The repository classes, the migration files, the FastAPI request/response models  all of that is boilerplate where the shape is obvious once you've decided on the schema, and where writing it by hand is more transactional than it is cognitive.
 
 Where it needed supervision was anything involving judgement about correctness. I elected technology choices, i knew ahead of time i wanted 
 fast API with pydantic models, an asyncio queue to account for the IO bound nature of the work, 
