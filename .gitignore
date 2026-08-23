@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.venv/
+*.db
+scripts/seed_credentials.json
+worker.log
+.coverage
+.coverage.*
+htmlcov/
+
+# macOS metadata
+.DS_Store
+**/.DS_Store
